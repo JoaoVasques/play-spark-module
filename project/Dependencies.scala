@@ -3,6 +3,8 @@ import sbt._
 object Dependencies {
 
   private final val akkaVersion = "2.3.9"
+  private final val sparkVersion = "1.5.2"
+  private final val playVersion = "2.4.2"
 
   lazy val akka = "com.typesafe.akka" %% "akka-actor" % akkaVersion
 
@@ -16,8 +18,17 @@ object Dependencies {
 
   lazy val scalaTest = "org.scalatest" %% "scalatest" % "2.2.1" % "test"
 
+  lazy val spark =  "org.apache.spark" %% "spark-core" % sparkVersion
+
+  lazy val mongo = "org.mongodb" %% "casbah" % "3.0.0"
+
+  lazy val play = "com.typesafe.play" %% "play" % playVersion % "provided" cross CrossVersion.binary
+
+  lazy val playTest = "com.typesafe.play" %% "play-test" % playVersion % "test" cross CrossVersion.binary
+ 
+
   def get() = {
-    Seq(akka, akkaLog, akkaTestKit, guice, scalaGuice, scalaTest)
+    Seq(akka, akkaLog, akkaTestKit, guice, scalaGuice, scalaTest, spark, mongo, play)
   }
 }
 

@@ -11,13 +11,13 @@ object BuildSettings {
     name := projectName,
     organization := "play.module.io.joaovasques",
     version := buildVersion,
-    scalaVersion := "2.11.7",
+    scalaVersion := "2.10.4",
     scalacOptions ++= Seq("-unchecked", "-deprecation",
       "-Xlint", "-Ywarn-dead-code",
-      "-language:_", "-target:jvm-1.8",
+      //"-language:_", "-target:jvm-1.8",
       "-encoding", "UTF-8"
     ),
-    crossScalaVersions := Seq("2.11.6"),
+    //crossScalaVersions := Seq("2.11.6"),
     crossVersion := CrossVersion.binary
   )
   //TODO ++ Publish.settings ++ Format.settings ++ Travis.settings
