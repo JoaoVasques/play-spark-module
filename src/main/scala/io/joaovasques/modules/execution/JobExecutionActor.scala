@@ -12,12 +12,17 @@ object JobExecutionActor extends NamedActor {
 
 class JobExecutionActor extends Actor {
 
+  override def preRestart(reason: Throwable, message: Option[Any]): Unit = {
+    context.children foreach {child =>
+      context.unwatch(child)
+      context.stop(child)
+    }
+    postStop()
+  }
+
   def receive = {
     case job @ StartJob(_) => {
       context.actorOf(Props[JobWorker], name = s"JobWorker-${job.id}") ! job
-      context.children.toList.foreach(println)
-
-      println("hello from JobExecutionActor")
     }
   }
 }
