@@ -1,4 +1,4 @@
-package akkaguice
+package play.module.io.joaovasques.playspark.akkaguice
 
 import akka.actor._
 import com.google.inject.Injector

@@ -1,4 +1,4 @@
-package akkaguice
+package play.module.io.joaovasques.playspark.akkaguice
 
 import akka.actor.{IndirectActorProducer, Actor}
 import com.google.inject.name.Names
@@ -18,3 +18,4 @@ class GuiceActorProducer(val injector: Injector, val actorName: String) extends 
     injector.getBinding(Key.get(classOf[Actor], Names.named(actorName))).getProvider.get()
 
 }
+
