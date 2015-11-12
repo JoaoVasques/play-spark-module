@@ -12,7 +12,7 @@ import play.module.io.joaovasques.playspark.persistence.{PersistenceActor}
 import play.module.io.joaovasques.playspark.stats.StatsActor
 
 object CoreActor extends NamedActor {
-  override final val name = "CoreCompanion"
+  override final val name = "CoreActor"
 }
 
 class CoreActor @Inject()(
