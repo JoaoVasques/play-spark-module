@@ -1,0 +1,17 @@
+language: scala
+scala:
+  - 2.10.4
+branches:
+  only:
+    - master
+script:
+  - sbt ++$TRAVIS_SCALA_VERSION compile test:compile
+notifications:
+  email:
+    recipients:
+      - joao.l.v.vasques@gmail.com
+jdk:
+  - oraclejdk8
+services:
+  - mongodb
+  
