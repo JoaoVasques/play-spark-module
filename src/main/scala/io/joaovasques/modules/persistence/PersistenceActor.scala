@@ -25,9 +25,9 @@ class PersistenceActor extends Actor {
   }
 
   def receive = {
-    case request @ (Insert(_,_) | Find(_,_,_,_) | Update(_,_,_,_,_) | Delete(_,_,_)) => {
+    case  request @ (Find(_,_,_,_) | Insert(_,_) | Update(_,_,_,_,_) | Delete(_,_,_)) => {
       val workerId = UUID.randomUUID().toString()
-      context.actorOf(PersistenceWorker.props(database), name = s"Persistence-Worker-${workerId}") ! request
+      context.actorOf(PersistenceWorker.props(database), name = s"Persistence-Worker-${workerId}") forward request
     }
   }
 }
