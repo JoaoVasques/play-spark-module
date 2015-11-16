@@ -17,6 +17,7 @@ object BuildSettings {
       //"-language:_", "-target:jvm-1.8",
       "-encoding", "UTF-8"
     ),
+    javaOptions ++= Seq("-Dscalac.patmat.analysisBudget=off"),
     //crossScalaVersions := Seq("2.11.6"),
     crossVersion := CrossVersion.binary
   )
