@@ -32,8 +32,7 @@ class CoreActor @Inject()(
   }
 
   private def handlePersistenceRequest: Receive = {
-    case m @ (Insert(_,_) | Update(_,_,_,_,_) | Delete(_,_,_)) => persistenceActor ! m
-    case m @ Find(_,_,_,_) => persistenceActor forward m
+    case m @ (Find(_,_,_,_) | Insert(_,_) | Update(_,_,_,_,_) | Delete(_,_,_)) => persistenceActor forward m
   }
 
   private def handleStatsRequest: Receive = {
@@ -41,8 +40,7 @@ class CoreActor @Inject()(
   }
 
   private def handleSparkRequest: Receive = {
-    case m @ GetContext(_) => sparkActor forward m
-    case m @ SaveContext(_) => sparkActor ! m
+    case m @ (GetContext(_) | GetContexts | RestartContext(_) | SaveContext(_) | DeleteContext(_) | StopContext(_)) => sparkActor forward m
   }
 
   private def unhandled: Receive = {
