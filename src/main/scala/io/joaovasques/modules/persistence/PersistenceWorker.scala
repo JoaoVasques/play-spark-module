@@ -13,15 +13,17 @@ private[persistence] sealed class PersistenceWorker(db: MongoDB) extends Actor {
 
   private def handleInsert: Receive = {
     case req @ Insert(el, collection) => {
+      val _sender = sender
       val query = DBObject(el.as[JsObject].fields.toList)
       val writeResult = db(collection).insert(query)
       if(writeResult.wasAcknowledged()) {
-        sender ! new Success(_: Unit)
+        _sender ! new Success((): Unit)
         //TODO LOG WRITE SUCCESS
       } else {
-        sender ! new Failure(new Exception("TODO"))
+        _sender ! new Failure(new Exception("TODO"))
         //TODO LOG FAILURE
       }
+      context.stop(self)
     }
   }
 
@@ -52,7 +54,7 @@ private[persistence] sealed class PersistenceWorker(db: MongoDB) extends Actor {
       val query = MongoDBObject(key -> id)
       db(collection).findAndRemove(query) match {
         case Some(_) => {
-          _sender ! new Success(_: Unit)
+          _sender ! new Success((): Unit)
           //LOG SUCCESS
         }
         case None => {
@@ -60,6 +62,7 @@ private[persistence] sealed class PersistenceWorker(db: MongoDB) extends Actor {
           // LOG FAILURE
         }
       }
+      context.stop(self)
     }
   }
 
