@@ -7,8 +7,11 @@ import com.google.inject._
 import com.google.inject.name.Named
 import config.ConfigModule
 import play.module.io.joaovasques.playspark.akkaguice.AkkaModule
+import play.module.io.joaovasques.playspark.spark.SparkMessages.DeleteContext
 import play.module.io.joaovasques.playspark.spark.SparkMessages.GetContext
+import play.module.io.joaovasques.playspark.spark.SparkMessages.RestartContext
 import play.module.io.joaovasques.playspark.spark.SparkMessages.SaveContext
+import play.module.io.joaovasques.playspark.spark.SparkMessages.StopContext
 import play.module.io.joaovasques.playspark.spark.SparkModule
 import net.codingwell.scalaguice.ScalaModule
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
@@ -31,6 +34,9 @@ import akka.pattern.ask
 import akka.util.Timeout
 import scala.concurrent.duration._
 import scala.language.postfixOps
+import scala.util.Failure
+import scala.util.Success
+import scala.util.Try
 
 class SparkSpec(_system: ActorSystem) extends TestKit(_system) with ImplicitSender with WordSpecLike
     with Matchers with BeforeAndAfterAll {
@@ -55,13 +61,11 @@ class SparkSpec(_system: ActorSystem) extends TestKit(_system) with ImplicitSend
         .setAppName("SparkSpec")
       val sc = new SparkContext(conf)
       sparkAppid = sc.applicationId
-      core ! new SaveContext(sc)
 
-
-      val futureResult = Future {1}
-      val result = Await.result(futureResult, duration)
+      val futureResult = (core ? new SaveContext(sc)).mapTo[Try[Unit]]
       sc.stop()
-      result === 1
+      val result = Await.result(futureResult, duration)
+      result shouldBe an [Try[_]]
     }
 
     "fetch an existing Spark context" in new Core {
@@ -77,6 +81,29 @@ class SparkSpec(_system: ActorSystem) extends TestKit(_system) with ImplicitSend
         }
         case None => fail(s"Not Spark Context was found for app id ${sparkAppid}")
       }
+    }
+
+    "restart an existing Spark Context" in new Core {
+      override def _sys = _system
+
+      val futureResult = (core ? new RestartContext(sparkAppid)).mapTo[SparkContext]
+      val result = Await.result(futureResult, duration)
+      result.stop()
+      result shouldBe an [SparkContext]
+    }
+
+    "stop an existing and running Spark Context" in new Core {
+      override def _sys = _system
+
+      val futureResult = (core ? new StopContext(sparkAppid)).mapTo[Try[Unit]]
+      Await.result(futureResult, duration) shouldBe an [Success[_]]
+    }
+
+    "delete an existing Spark Context" in new Core {
+      override def _sys = _system
+
+      val futureResult = (core ? new DeleteContext(sparkAppid)).mapTo[Try[Unit]]
+      Await.result(futureResult, duration) shouldBe an [Success[_]]
     }
   }
 }
