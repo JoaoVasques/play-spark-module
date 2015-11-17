@@ -39,10 +39,10 @@ class SparkActor @Inject()(
     }
   }
 
-  private def sendTryResponse[T](result: Try[_], sender: ActorRef, successResponse: T): Unit = {
+  private def sendTryResponse[T](result: Try[_], s: ActorRef, successResponse: T): Unit = {
     result match {
-      case Success(_) => sender ! successResponse
-      case Failure(ex) => sender ! ex
+      case Success(_) => s ! successResponse
+      case Failure(ex) => s ! ex
     }
   }
 
@@ -51,7 +51,7 @@ class SparkActor @Inject()(
       val _sender = sender
       val query = new Find("spark_app_id", id, "contexts")
       getSparkContext[Option[JsValue]](query){result: Option[JsValue] =>
-        _sender ! ( result.map(r => new SparkContext(r: SparkConf)))
+        _sender ! (result.map(r => new SparkContext(r: SparkConf)))
       } {failure: Throwable =>
          _sender ! failure
       }
@@ -75,9 +75,7 @@ class SparkActor @Inject()(
       val _sender = sender
       val query = new Insert(sparkConfToJson(request.context.getConf), "contexts")
       val successResponse = new Success((): Unit)
-        (persistenceActor ? query).mapTo[Try[Unit]].onComplete(
-          sendTryResponse[Success[Unit]](_, _sender, successResponse)
-        )
+        (persistenceActor ? query).mapTo[Try[Unit]].onComplete(sendTryResponse[Success[Unit]](_, _sender, successResponse))
     }
   }
 
@@ -90,7 +88,7 @@ class SparkActor @Inject()(
           case Some(config) => {
             val sparkContext = new SparkContext(config: SparkConf)
             sparkContext.stop()
-            _sender ! new Success(_: Unit)
+            _sender ! new Success((): Unit)
           }
           case None => {
             _sender ! new Failure(new Exception("TODO"))
@@ -149,6 +147,12 @@ class SparkActor @Inject()(
     }
   }
 
-  def receive = handleGetSparkContext orElse handleSaveContext orElse unhandled
+  def receive = handleGetSparkContext orElse
+  handleGetContexts orElse
+  handleSaveContext orElse
+  handleStopContext orElse
+  handleRestartContext orElse
+  handleDeleteContext orElse
+  unhandled
 }
 
