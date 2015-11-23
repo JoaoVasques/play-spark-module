@@ -38,7 +38,7 @@ class SparkActor @Inject()(
   @Named(PersistenceActor.name) persistenceActor: ActorRef
 ) extends Actor {
 
-  private var currentSparkContext: SparkContext = _
+  private var currentSparkContext: Option[SparkContext] = None
   private final val maximumRunningJobs = Runtime.getRuntime.availableProcessors
   private val executionContext: ExecutionContext = ExecutionContext.fromExecutorService(newFixedThreadPool(maximumRunningJobs))
   private final implicit val timeout = Timeout(5 seconds)
@@ -76,11 +76,11 @@ class SparkActor @Inject()(
   private def handleSaveContext: Receive = {
     case request @ (_: SaveContext) => {
       val _sender = sender
-      if(currentSparkContext == null) {
-        currentSparkContext = new SparkContext(request.conf)
+      if(currentSparkContext.isEmpty) {
+        currentSparkContext = Some(new SparkContext(request.conf))
       }
 
-      val query = new Insert(sparkConfToJson(currentSparkContext.getConf), "contexts")
+      val query = new Insert(sparkConfToJson(currentSparkContext.map(_.getConf).get), "contexts")
       val successResponse = new Success((): Unit)
         (persistenceActor ? query).mapTo[Try[Unit]].onComplete(sendTryResponse[Success[Unit]](_, _sender, successResponse))
     }
@@ -88,9 +88,9 @@ class SparkActor @Inject()(
 
   private def handleStopContext: Receive = {
     case request @ StopContext() => {
-      if(currentSparkContext != null) {
-        currentSparkContext.stop()
-        currentSparkContext = null
+      if(!currentSparkContext.isEmpty) {
+        currentSparkContext.get.stop()
+        currentSparkContext = None
         sender ! new Success((): Unit)
       } else {
         sender ! new Failure(new Exception("No running context"))
@@ -104,7 +104,7 @@ class SparkActor @Inject()(
       val query = new Find("spark_app_id", id, "contexts")
       getSparkContext[Option[JsValue]](query) {
         case Some(result) => {
-          currentSparkContext = new SparkContext(result: SparkConf)
+          currentSparkContext = Some(new SparkContext(result: SparkConf))
           _sender ! new Success((): Unit)
         }
         case None => {}
@@ -117,10 +117,10 @@ class SparkActor @Inject()(
   //FIND AND STOP CONTEXT
   private def handleDeleteContext: Receive = {
     case request @ DeleteContext(id) => {
-      if(currentSparkContext != null) {
-        if(currentSparkContext.applicationId == id) {
-          currentSparkContext.stop()
-          currentSparkContext = null
+      if(!currentSparkContext.isEmpty) {
+        if(currentSparkContext.map(_.applicationId).get == id) {
+          currentSparkContext.get.stop()
+          currentSparkContext = None
         }
       }
 
@@ -155,7 +155,7 @@ class SparkActor @Inject()(
           //TODO: send job information to status actor
           val workerId = UUID.randomUUID().toString()
           context.actorOf(
-            SparkJobWorker.props(sender, executionContext, this.currentSparkContext),
+            SparkJobWorker.props(sender, executionContext, this.currentSparkContext.get),
             name = s"SparkJobWorker-${workerId}"
           ) forward message
         }
