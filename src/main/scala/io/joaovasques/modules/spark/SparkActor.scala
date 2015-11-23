@@ -5,8 +5,10 @@ import akka.pattern.ask
 import akka.routing.ActorRefRoutee
 import akka.routing.Router
 import java.util.UUID
+import java.util.concurrent.atomic.AtomicInteger
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
+import play.module.io.joaovasques.playspark.spark.SparkMessages.SparkJobMessage
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -36,10 +38,13 @@ class SparkActor @Inject()(
   @Named(PersistenceActor.name) persistenceActor: ActorRef
 ) extends Actor {
 
-  private var currentSparkContext: SparkContext = null
+  private var currentSparkContext: SparkContext = _
   private final val maximumRunningJobs = Runtime.getRuntime.availableProcessors
   private val executionContext: ExecutionContext = ExecutionContext.fromExecutorService(newFixedThreadPool(maximumRunningJobs))
   private final implicit val timeout = Timeout(5 seconds)
+
+  private val currentRunningJobs = new AtomicInteger(0)
+
 
   private def getSparkContext[T](query: Find)(onSuccess : T => Unit )(onFailure: Throwable => Unit)(implicit tag: ClassTag[T] ): Unit = {
     (persistenceActor ? query).mapTo[T].onComplete{
@@ -139,9 +144,22 @@ class SparkActor @Inject()(
   }
 
   private def handleJobSubmission: Receive = {
-    case message : SparkJobMessage => {
-      val workerId = UUID.randomUUID().toString()
-      context.actorOf(SparkJobWorker.props(executionContext), name = s"SparkJobWorker-${workerId}") forward message
+    case message : StartSparkJob => {
+      if(this.currentSparkContext == null) {
+
+      } else {
+        if(currentRunningJobs.getAndIncrement() >= maximumRunningJobs) {
+          currentRunningJobs.decrementAndGet()
+          //TODO: send message to sender, put job in queue
+        } else {
+          //TODO: send job information to status actor
+          val workerId = UUID.randomUUID().toString()
+          context.actorOf(
+            SparkJobWorker.props(sender, executionContext, this.currentSparkContext),
+            name = s"SparkJobWorker-${workerId}"
+          ) forward message
+        }
+      }
     }
   }
 
@@ -151,6 +169,5 @@ class SparkActor @Inject()(
     handleStartContext orElse
     handleDeleteContext orElse
     handleJobSubmission
-  
 }
 
