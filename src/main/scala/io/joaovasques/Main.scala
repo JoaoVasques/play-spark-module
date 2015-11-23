@@ -1,16 +1,30 @@
 import akka.actor.ActorSystem
 import akka.pattern.ask
-import play.module.io.joaovasques.playspark.akkaguice.{AkkaModule, GuiceAkkaExtension}
+import akka.util.Timeout
 import com.google.inject.Guice
 import config.ConfigModule
 import net.codingwell.scalaguice.InjectorExtensions._
-
+import org.apache.spark.SparkContext
+import play.module.io.joaovasques.playspark.akkaguice.AkkaModule
+import play.module.io.joaovasques.playspark.akkaguice.GuiceAkkaExtension
+import play.module.io.joaovasques.playspark.core.CoreActor
+import play.module.io.joaovasques.playspark.core.CoreModule
+import play.module.io.joaovasques.playspark.api.SparkJob
+import play.module.io.joaovasques.playspark.persistence._
+import play.module.io.joaovasques.playspark.spark.SparkModule
+import play.module.io.joaovasques.playspark.spark.SparkMessages._
+import play.module.io.joaovasques.playspark.stats.StatsModule
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
-import play.module.io.joaovasques.playspark.execution.{ExectionModule}
-import play.module.io.joaovasques.playspark.core.{CoreModule, CoreActor}
-import play.module.io.joaovasques.playspark.persistence._
+import scala.language.postfixOps
 
+class ExampleJob extends SparkJob {
+
+  def runJob(context: SparkContext): Any = {
+    println("Hello world")
+  }
+}
 
 /**
  * A main class to start up the application.
@@ -20,15 +34,20 @@ object Main extends App {
   val injector = Guice.createInjector(
     new ConfigModule(),
     new AkkaModule(),
-    new ExectionModule(),
     new PersistenceModule(),
+    new StatsModule(),
+    new SparkModule(),
     new CoreModule()
   )
 
-  val system = injector.instance[ActorSystem]
-  val core = system.actorOf(GuiceAkkaExtension(system).props(CoreActor.name))
+  // implicit val timeout = Timeout(5 seconds)
+  // val system = injector.instance[ActorSystem]
+  // val core = system.actorOf(GuiceAkkaExtension(system).props(CoreActor.name))
+  // val future = (core ? new StartSparkJob(new ExampleJob())).mapTo[Boolean]
+  // Await.result(future, 3.seconds)
 
-  core ! "Hey"
+  // system.shutdown()
+  // system.awaitTermination()
 
   // // this could be called inside a supervisor actor to create a supervisor hierarchy,
   // // using context.actorOf(GuiceAkkaExtension(context.system)...
