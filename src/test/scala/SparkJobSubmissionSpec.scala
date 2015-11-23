@@ -33,23 +33,48 @@ import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
 
-sealed class ExampleJob extends SparkJob {
-
-  def runJob(context: SparkContext): Any = {
-    println("HELLO JOB")
-  }
-}
-
 class SparkJobSubmissionSpec(_system: ActorSystem) extends TestKit(_system) with ImplicitSender with WordSpecLike
-    with Matchers with BeforeAndAfterAll {
+    with Matchers with BeforeAndAfterAll with Core {
 
-  private final implicit val duration = 5.seconds
-  private final implicit val timeout = Timeout(5 seconds)
+  private final implicit val duration = 10.seconds
+  private final implicit val timeout = Timeout(10 seconds)
 
   def this() = this(ActorSystem("SparkJobSubmissionSpec"))
-      
+
+  override def _sys = _system
+
   override def afterAll(): Unit = {
     TestKit.shutdownActorSystem(system)
+  }
+
+  private def removeContext() = {
+    val futureResult = (core ? new StopContext()).mapTo[Try[Unit]]
+    Await.result(futureResult, duration) shouldBe an [Failure[_]]
+  }
+
+  "A Spark Actor" must {
+    "Submit a job syncronously correctly" in {
+      val conf = new SparkConf()
+        .setMaster("local[2]")
+        .setAppName("JobSubmissionSpec")
+
+      val futureResult = (core ? new SaveContext(conf)).mapTo[Try[Unit]]
+      val result = Await.result(futureResult, duration)
+
+      result match {
+        case Success(_) => {
+          val request = new StartSparkJob(new LongPiJob(), "")
+          val futRes = (core ? request).mapTo[SparkJobMessage]
+          val res = Await.result(futRes, duration)
+          //removeContext()
+          res match {
+            case c: JobCompleted => c.result === 3.16
+            case f: JobFailed => fail(f.error.getMessage())
+          }
+        }
+        case Failure(ex) => fail(ex.getMessage())
+      }
+    }
   }
 
   // "A Spark Actor" must {
@@ -61,7 +86,7 @@ class SparkJobSubmissionSpec(_system: ActorSystem) extends TestKit(_system) with
   //     //   .setMaster("local[2]")
   //     //   .setAppName("SparkSpec")
   //     // })
-  //     // sc.stop()
+  //     // sc.stop() 
 
   //     val request = new StartSparkJob(new ExampleJob(), "")//sc.applicationId)
   //     core ! request
