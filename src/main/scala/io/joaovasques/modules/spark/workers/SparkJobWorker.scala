@@ -1,29 +1,51 @@
 package play.module.io.joaovasques.playspark.spark.workers
 
 import akka.actor.Actor
+import akka.actor.ActorLogging
+import akka.actor.ActorRef
 import akka.actor.Props
+import java.util.Date
+import org.apache.spark.SparkContext
 import org.apache.spark.SparkEnv
 import scala.concurrent.ExecutionContext
 import play.module.io.joaovasques.playspark.spark.SparkMessages._
+import scala.concurrent.Future
+import scala.util.{Failure, Success}
 
 object SparkJobWorker {
 
-  def props(exectionContext: ExecutionContext): Props = Props(new SparkJobWorker(exectionContext))
+  def props(
+    jobRequester: ActorRef,
+    exectionContext: ExecutionContext,
+    context: SparkContext
+  ): Props = Props(new SparkJobWorker(jobRequester, exectionContext, context))
 }
 
 private[spark] class SparkJobWorker(
-  exectionContext: ExecutionContext
-) extends Actor {
-
-  private var sparkEnv: SparkEnv = _
+  jobRequester: ActorRef,
+  exectionContext: ExecutionContext,
+  sparkContext: SparkContext 
+) extends Actor with ActorLogging {
 
   def receive = {
     case _ @ StartSparkJob(job, contextId) => {
-      sparkEnv = SparkEnv.get
-      println("SPARK JOB WORKER")
-      println(sparkEnv)
-      sender ! true
-      context.stop(self)
+      Future {
+        log.info(s"Starting job ${self.hashCode()} future")
+        job.runJob(sparkContext)
+      }(exectionContext).andThen{
+        case Success(result: Any) => {
+          jobRequester ! new JobCompleted(self.path.name, result)
+        }
+        case Failure(ex: Throwable) => {
+          println(ex.getLocalizedMessage())
+            jobRequester ! new JobFailed(self.path.name, ex, new Date().getTime())
+        }
+      }(exectionContext).andThen{
+        case _ => {
+          log.info("Job is done. Shutting down worker")
+          context.stop(self)
+        }
+      }(exectionContext)
     }
   }
 }
