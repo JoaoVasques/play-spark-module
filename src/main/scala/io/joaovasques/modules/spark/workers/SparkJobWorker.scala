@@ -27,6 +27,8 @@ private[spark] class SparkJobWorker(
   sparkContext: SparkContext 
 ) extends Actor with ActorLogging {
 
+  import context._
+
   def receive = {
     case _ @ StartSparkJob(job, contextId) => {
       Future {
@@ -34,11 +36,14 @@ private[spark] class SparkJobWorker(
         job.runJob(sparkContext)
       }(exectionContext).andThen{
         case Success(result: Any) => {
-          jobRequester ! new JobCompleted(self.path.name, result)
+          val msg = new JobCompleted(self.path.name, result) 
+          parent ! msg
+          jobRequester ! msg
         }
         case Failure(ex: Throwable) => {
-          println(ex.getLocalizedMessage())
-            jobRequester ! new JobFailed(self.path.name, ex, new Date().getTime())
+          val msg = new JobFailed(self.path.name, ex, new Date().getTime())
+          parent ! msg
+          jobRequester ! msg
         }
       }(exectionContext).andThen{
         case _ => {
