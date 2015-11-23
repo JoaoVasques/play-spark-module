@@ -67,7 +67,6 @@ class SparkActor @Inject()(
       getSparkContext[List[JsValue]](query) {result =>
         _sender ! result.map(c => c: SparkConf)
       } {failure =>
-        println(failure.getStackTraceString)
         _sender ! failure
       }
     }
