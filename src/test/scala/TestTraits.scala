@@ -9,7 +9,6 @@ import net.codingwell.scalaguice.ScalaModule
 import play.module.io.joaovasques.playspark.akkaguice.GuiceAkkaExtension
 import play.module.io.joaovasques.playspark.core.CoreActor
 import play.module.io.joaovasques.playspark.core.CoreModule
-import play.module.io.joaovasques.playspark.execution.ExectionModule
 import com.google.inject._
 import com.google.inject.name.Named
 import play.module.io.joaovasques.playspark.persistence.PersistenceModule
@@ -43,7 +42,6 @@ private[tests] object TestTraits {
   trait Core extends AkkaGuiceInjector {
     initInjector(
       _sys,
-      new ExectionModule(),
       new PersistenceModule(),
       new StatsModule(),
       new SparkModule(),
