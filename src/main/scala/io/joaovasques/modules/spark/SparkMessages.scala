@@ -15,5 +15,9 @@ object SparkMessages {
 
   trait SparkJobMessage
   case class StartSparkJob(job: SparkJob, contextId: String) extends SparkJobMessage
+
+  case class JobStarted(jobId: String) extends SparkJobMessage
+  case class JobCompleted(jobId: String, result: Any) extends SparkJobMessage
+  case class JobFailed(jobId: String, error: Throwable, time: Long) extends SparkJobMessage
 }
 
