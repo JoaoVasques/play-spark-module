@@ -5,7 +5,7 @@ import akka.pattern.ask
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.google.inject._
 import com.google.inject.name.Named
-import config.ConfigModule
+import play.modules.io.joaovasques.playspark.config._
 import play.modules.io.joaovasques.playspark.akkaguice.AkkaModule
 import play.modules.io.joaovasques.playspark.spark.SparkMessages._
 import play.modules.io.joaovasques.playspark.spark.SparkModule

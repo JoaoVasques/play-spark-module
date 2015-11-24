@@ -1,6 +1,6 @@
-package config
+package play.modules.io.joaovasques.playspark.config
 
-import config.ConfigModule.ConfigProvider
+import play.modules.io.joaovasques.playspark.config.ConfigModule.ConfigProvider
 import com.google.inject.{AbstractModule, Provider}
 import com.typesafe.config.{ConfigFactory, Config}
 import net.codingwell.scalaguice.ScalaModule

@@ -30,7 +30,7 @@ class CoreActor @Inject()(
   }
 
   private def handleSparkRequest: Receive = {
-    case m @ (GetContexts() | SaveContext(_) | DeleteContext(_) | StopContext() | StartSparkJob(_,_)) => {
+    case m @ (GetContexts() | SaveContext(_) | DeleteContext(_) | StopContext() | StartSparkJob(_,_,_)) => {
       sparkActor forward m
     }
   }

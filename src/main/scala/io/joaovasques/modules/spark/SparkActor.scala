@@ -29,7 +29,6 @@ import scala.util.Try
 import play.modules.io.joaovasques.playspark.spark.workers.{SparkJobWorker}
 import java.util.concurrent.Executors._
 
-
 object SparkActor extends NamedActor {
   override final val name = "SparkActor"
 }
@@ -80,8 +79,8 @@ class SparkActor @Inject()(
       }
 
       val query = new Insert(sparkConfToJson(currentSparkContext.map(_.getConf).get), "contexts")
-      val successResponse = new Success((): Unit)
-        (persistenceActor ? query).mapTo[Try[Unit]].onComplete(sendTryResponse[Success[Unit]](_, _sender, successResponse))
+      val successResponse = new Success(currentSparkContext.get.applicationId)
+        (persistenceActor ? query).mapTo[Try[String]].onComplete(sendTryResponse[Success[String]](_, _sender, successResponse))
     }
   }
 
@@ -103,10 +102,13 @@ class SparkActor @Inject()(
       val query = new Find("spark_app_id", id, "contexts")
       getSparkContext[Option[JsValue]](query) {
         case Some(result) => {
+          currentSparkContext.map(_.stop())
           currentSparkContext = Some(new SparkContext(result: SparkConf))
           _sender ! new Success((): Unit)
         }
-        case None => {}
+        case None => {
+          //TODO
+        }
       } {failure =>
         _sender ! failure
       }
@@ -144,14 +146,13 @@ class SparkActor @Inject()(
 
   private def handleJobSubmission: Receive = {
     case message : StartSparkJob => {
-      if(this.currentSparkContext == null) {
-
+      if(currentSparkContext.isEmpty) {
+        //TODO send error message: no spark running
       } else {
         if(currentRunningJobs.getAndIncrement() >= maximumRunningJobs) {
           currentRunningJobs.decrementAndGet()
           //TODO: send message to sender, put job in queue
         } else {
-          //TODO: send job information to status actor
           val workerId = UUID.randomUUID().toString()
           context.actorOf(
             SparkJobWorker.props(sender, executionContext, this.currentSparkContext.get),

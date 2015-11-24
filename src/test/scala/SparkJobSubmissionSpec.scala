@@ -5,7 +5,7 @@ import akka.pattern.ask
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import com.google.inject._
 import com.google.inject.name.Named
-import config.ConfigModule
+import play.modules.io.joaovasques.playspark.config._
 import play.modules.io.joaovasques.playspark.akkaguice.AkkaModule
 import play.modules.io.joaovasques.playspark.api.SparkJob
 import play.modules.io.joaovasques.playspark.spark.SparkMessages._
@@ -63,8 +63,8 @@ class SparkJobSubmissionSpec(_system: ActorSystem) extends TestKit(_system) with
 
       result match {
         case Success(_) => {
-          val request = new StartSparkJob(new LongPiJob(), "")
-          val futRes = (core ? request).mapTo[SparkJobMessage]
+          val request = new StartSparkJob(new LongPiJob(), "", true)
+          val futRes = (core ? request).mapTo[SparkJobResult]
           val res = Await.result(futRes, duration)
           //removeContext()
           res match {

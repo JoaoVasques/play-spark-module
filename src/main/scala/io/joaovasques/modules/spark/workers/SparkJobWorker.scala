@@ -30,7 +30,12 @@ private[spark] class SparkJobWorker(
   import context._
 
   def receive = {
-    case _ @ StartSparkJob(job, contextId) => {
+    case _ @ StartSparkJob(job, contextId, async) => {
+      //TODO: send job information to status actor
+      if(!async) {
+        jobRequester ! new JobStarted(self.path.name)
+      }
+
       Future {
         log.info(s"Starting job ${self.hashCode()} future")
         job.runJob(sparkContext)
