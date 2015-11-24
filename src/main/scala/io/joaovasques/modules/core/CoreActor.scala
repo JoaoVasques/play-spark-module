@@ -1,15 +1,15 @@
-package play.module.io.joaovasques.playspark.core
+package play.modules.io.joaovasques.playspark.core
 
 import akka.actor.{Actor, ActorRef}
-import play.module.io.joaovasques.playspark.akkaguice.NamedActor
+import play.modules.io.joaovasques.playspark.akkaguice.NamedActor
 import com.google.inject.{BindingAnnotation, Inject}
 import com.google.inject.name.Named
-import play.module.io.joaovasques.playspark.persistence.PersistenceMessages._
-import play.module.io.joaovasques.playspark.stats.StatsMessages._
-import play.module.io.joaovasques.playspark.persistence.{PersistenceActor}
-import play.module.io.joaovasques.playspark.stats.StatsActor
-import play.module.io.joaovasques.playspark.spark.SparkActor
-import play.module.io.joaovasques.playspark.spark.SparkMessages._
+import play.modules.io.joaovasques.playspark.persistence.PersistenceMessages._
+import play.modules.io.joaovasques.playspark.stats.StatsMessages._
+import play.modules.io.joaovasques.playspark.persistence.{PersistenceActor}
+import play.modules.io.joaovasques.playspark.stats.StatsActor
+import play.modules.io.joaovasques.playspark.spark.SparkActor
+import play.modules.io.joaovasques.playspark.spark.SparkMessages._
 
 object CoreActor extends NamedActor {
   override final val name = "CoreActor"

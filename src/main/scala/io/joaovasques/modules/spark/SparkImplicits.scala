@@ -1,4 +1,4 @@
-package play.module.io.joaovasques.playspark.spark
+package play.modules.io.joaovasques.playspark.spark
 
 import org.apache.spark.SparkConf
 import play.api.libs.json.JsArray

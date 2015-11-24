@@ -1,9 +1,9 @@
-package play.module.io.joaovasques.playspark.core
+package play.modules.io.joaovasques.playspark.core
 
 import javax.inject.Inject
 
 import akka.actor.{Actor, ActorRef, ActorSystem}
-import play.module.io.joaovasques.playspark.akkaguice.GuiceAkkaActorRefProvider
+import play.modules.io.joaovasques.playspark.akkaguice.GuiceAkkaActorRefProvider
 import com.google.inject.name.{Named, Names}
 import com.google.inject.{AbstractModule, Provides, Singleton}
 import net.codingwell.scalaguice.ScalaModule

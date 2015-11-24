@@ -1,4 +1,4 @@
-package play.module.io.joaovasques.playspark.stats
+package play.modules.io.joaovasques.playspark.stats
 
 object StatsMessages {
 

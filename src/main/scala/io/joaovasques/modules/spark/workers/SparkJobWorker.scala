@@ -1,4 +1,4 @@
-package play.module.io.joaovasques.playspark.spark.workers
+package play.modules.io.joaovasques.playspark.spark.workers
 
 import akka.actor.Actor
 import akka.actor.ActorLogging
@@ -8,7 +8,7 @@ import java.util.Date
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkEnv
 import scala.concurrent.ExecutionContext
-import play.module.io.joaovasques.playspark.spark.SparkMessages._
+import play.modules.io.joaovasques.playspark.spark.SparkMessages._
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
 

@@ -1,10 +1,10 @@
-package play.module.io.joaovasques.playspark.tests
+package play.modules.io.joaovasques.playspark.tests
 
 import com.typesafe.config.{Config, ConfigFactory}
 import org.apache.spark._
 import scala.util.Try
 import java.util.{Random, Date}
-import play.module.io.joaovasques.playspark.api.SparkJob
+import play.modules.io.joaovasques.playspark.api.SparkJob
 
 /**
  * A long job for stress tests purpose.

@@ -1,7 +1,7 @@
-package play.module.io.joaovasques.playspark.stats
+package play.modules.io.joaovasques.playspark.stats
 
 import akka.actor.{Actor}
-import play.module.io.joaovasques.playspark.stats.StatsMessages._
+import play.modules.io.joaovasques.playspark.stats.StatsMessages._
 
 private[stats] sealed class StatsWorker extends Actor {
 

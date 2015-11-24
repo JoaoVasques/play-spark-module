@@ -1,7 +1,7 @@
-package play.module.io.joaovasques.playspark.spark
+package play.modules.io.joaovasques.playspark.spark
 
 import org.apache.spark.SparkConf
-import play.module.io.joaovasques.playspark.api.SparkJob
+import play.modules.io.joaovasques.playspark.api.SparkJob
 
 object SparkMessages {
 

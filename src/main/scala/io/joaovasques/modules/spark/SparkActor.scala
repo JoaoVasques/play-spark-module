@@ -1,4 +1,4 @@
-package play.module.io.joaovasques.playspark.spark
+package play.modules.io.joaovasques.playspark.spark
 
 import akka.actor.{Actor, ActorRef, Props}
 import akka.pattern.ask
@@ -8,25 +8,25 @@ import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
-import play.module.io.joaovasques.playspark.spark.SparkMessages.SparkJobMessage
+import play.modules.io.joaovasques.playspark.spark.SparkMessages.SparkJobMessage
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import akka.util.Timeout
 import play.api.libs.json.JsValue
-import play.module.io.joaovasques.playspark.akkaguice.NamedActor
+import play.modules.io.joaovasques.playspark.akkaguice.NamedActor
 import com.google.inject.{BindingAnnotation, Inject}
 import com.google.inject.name.Named
-import play.module.io.joaovasques.playspark.persistence.PersistenceActor
-import play.module.io.joaovasques.playspark.spark.SparkMessages._
-import play.module.io.joaovasques.playspark.spark.SparkImplicits._
-import play.module.io.joaovasques.playspark.persistence.PersistenceMessages._
+import play.modules.io.joaovasques.playspark.persistence.PersistenceActor
+import play.modules.io.joaovasques.playspark.spark.SparkMessages._
+import play.modules.io.joaovasques.playspark.spark.SparkImplicits._
+import play.modules.io.joaovasques.playspark.persistence.PersistenceMessages._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Failure
 import scala.util.Success
 import reflect.ClassTag
 import scala.util.Try
-import play.module.io.joaovasques.playspark.spark.workers.{SparkJobWorker}
+import play.modules.io.joaovasques.playspark.spark.workers.{SparkJobWorker}
 import java.util.concurrent.Executors._
 
 
