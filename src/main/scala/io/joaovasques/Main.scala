@@ -2,7 +2,7 @@ import akka.actor.ActorSystem
 import akka.pattern.ask
 import akka.util.Timeout
 import com.google.inject.Guice
-import config.ConfigModule
+import play.modules.io.joaovasques.playspark.config._
 import net.codingwell.scalaguice.InjectorExtensions._
 import org.apache.spark.SparkContext
 import play.modules.io.joaovasques.playspark.akkaguice.AkkaModule
