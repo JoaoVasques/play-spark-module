@@ -9,7 +9,7 @@ Some considerations:
 + It wasn't tested on a production environment (yet!)
 + No remote spark job submissions tested (yet)
 
-For contribution please check CONTRIBUTING.md
+For contribution please check [CONTRIBUTING.md](https://github.com/JoaoVasques/play-spark-module/blob/master/CONTRIBUTING.md)
 
 ### Usage
 
