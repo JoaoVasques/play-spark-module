@@ -17,4 +17,4 @@ dist
 /activator-sbt-atmos-akka-shim.sbt
 /activator-sbt-atmos-play-shim.sbt
 .ensime*
-
+doc/*
