@@ -1,8 +1,7 @@
 Contribute
 ----------------------------
 
-**Contributions will not be accepted without tests or necessary documentation updates
-**
+**Contributions will not be accepted without tests or necessary documentation updates**
 
 ### Workflow
 
