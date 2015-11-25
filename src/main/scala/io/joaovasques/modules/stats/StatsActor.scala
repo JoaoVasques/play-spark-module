@@ -1,7 +1,7 @@
-package play.module.io.joaovasques.playspark.stats
+package play.modules.io.joaovasques.playspark.stats
 
 import akka.actor.{Actor, ActorRef}
-import play.module.io.joaovasques.playspark.akkaguice.NamedActor
+import play.modules.io.joaovasques.playspark.akkaguice.NamedActor
 import com.google.inject.{BindingAnnotation, Inject}
 import com.google.inject.name.Named
 

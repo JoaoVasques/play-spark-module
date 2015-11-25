@@ -1,7 +1,7 @@
-package play.module.io.joaovasques.playspark.akkaguice
+package play.modules.io.joaovasques.playspark.akkaguice
 
 import akka.actor.ActorSystem
-import play.module.io.joaovasques.playspark.akkaguice.AkkaModule.ActorSystemProvider
+import play.modules.io.joaovasques.playspark.akkaguice.AkkaModule.ActorSystemProvider
 import com.google.inject.{AbstractModule, Injector, Provider}
 import com.typesafe.config.Config
 import net.codingwell.scalaguice.ScalaModule

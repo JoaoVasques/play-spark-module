@@ -1,15 +1,14 @@
-package play.module.io.joaovasques.playspark.persistence
+package play.modules.io.joaovasques.playspark.persistence
 
-import akka.actor.Props
-import akka.actor.{Actor}
+import akka.actor.{ActorLogging, Props, Actor}
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
-import play.module.io.joaovasques.playspark.persistence.PersistenceMessages._
+import play.modules.io.joaovasques.playspark.persistence.PersistenceMessages._
 import com.mongodb.casbah.Imports._
 import scala.util.Failure
 import scala.util.Success
 
-private[persistence] sealed class PersistenceWorker(db: MongoDB) extends Actor {
+private[persistence] sealed class PersistenceWorker(db: MongoDB) extends Actor with ActorLogging {
 
   private def handleInsert: Receive = {
     case req @ Insert(el, collection) => {
@@ -67,7 +66,7 @@ private[persistence] sealed class PersistenceWorker(db: MongoDB) extends Actor {
   }
 
   private def unhandled: Receive = {
-    case _ => println("unhandled persistence worker")
+    case m => log.error("unhandled message: " + m)
   }
 
   def receive = handleInsert orElse handleFind orElse handleUpdate orElse handleDelete orElse unhandled

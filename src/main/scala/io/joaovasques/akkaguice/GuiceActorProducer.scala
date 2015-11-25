@@ -1,4 +1,4 @@
-package play.module.io.joaovasques.playspark.akkaguice
+package play.modules.io.joaovasques.playspark.akkaguice
 
 import akka.actor.{IndirectActorProducer, Actor}
 import com.google.inject.name.Names

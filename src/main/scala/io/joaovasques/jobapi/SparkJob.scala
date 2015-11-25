@@ -1,4 +1,4 @@
-package play.module.io.joaovasques.playspark.api
+package play.modules.io.joaovasques.playspark.api
 
 import org.apache.spark.SparkContext
 

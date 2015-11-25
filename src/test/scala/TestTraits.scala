@@ -1,4 +1,4 @@
-package play.module.io.joaovasques.playspark.tests
+package play.modules.io.joaovasques.playspark.tests
 
 import akka.actor.ActorSystem
 import com.google.inject.AbstractModule
@@ -6,14 +6,14 @@ import com.google.inject.Guice
 import com.google.inject.Injector
 import com.google.inject.Module
 import net.codingwell.scalaguice.ScalaModule
-import play.module.io.joaovasques.playspark.akkaguice.GuiceAkkaExtension
-import play.module.io.joaovasques.playspark.core.CoreActor
-import play.module.io.joaovasques.playspark.core.CoreModule
+import play.modules.io.joaovasques.playspark.akkaguice.GuiceAkkaExtension
+import play.modules.io.joaovasques.playspark.core.CoreActor
+import play.modules.io.joaovasques.playspark.core.CoreModule
 import com.google.inject._
 import com.google.inject.name.Named
-import play.module.io.joaovasques.playspark.persistence.PersistenceModule
-import play.module.io.joaovasques.playspark.spark.SparkModule
-import play.module.io.joaovasques.playspark.stats.StatsModule
+import play.modules.io.joaovasques.playspark.persistence.PersistenceModule
+import play.modules.io.joaovasques.playspark.spark.SparkModule
+import play.modules.io.joaovasques.playspark.stats.StatsModule
 import scala.collection.JavaConverters._
 
 

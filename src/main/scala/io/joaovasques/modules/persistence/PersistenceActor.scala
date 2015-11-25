@@ -1,11 +1,11 @@
-package play.module.io.joaovasques.playspark.persistence
+package play.modules.io.joaovasques.playspark.persistence
 
 import akka.actor.{Actor, ActorRef, Props}
 import java.util.UUID
-import play.module.io.joaovasques.playspark.akkaguice.NamedActor
+import play.modules.io.joaovasques.playspark.akkaguice.NamedActor
 import com.google.inject.{BindingAnnotation, Inject}
 import com.google.inject.name.Named
-import play.module.io.joaovasques.playspark.persistence.PersistenceMessages._
+import play.modules.io.joaovasques.playspark.persistence.PersistenceMessages._
 import com.mongodb.casbah.Imports._
 
 object PersistenceActor extends NamedActor {

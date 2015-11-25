@@ -1,4 +1,4 @@
-package play.module.io.joaovasques.playspark.persistence
+package play.modules.io.joaovasques.playspark.persistence
 
 import play.api.libs.json._
 

@@ -1,34 +1,34 @@
-package play.module.io.joaovasques.playspark.spark
+package play.modules.io.joaovasques.playspark.spark
 
 import akka.actor.{Actor, ActorRef, Props}
 import akka.pattern.ask
 import akka.routing.ActorRefRoutee
 import akka.routing.Router
+import java.util.Date
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext
-import play.module.io.joaovasques.playspark.spark.SparkMessages.SparkJobMessage
+import play.modules.io.joaovasques.playspark.spark.SparkMessages.SparkJobMessage
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 import scala.language.postfixOps
 import akka.util.Timeout
 import play.api.libs.json.JsValue
-import play.module.io.joaovasques.playspark.akkaguice.NamedActor
+import play.modules.io.joaovasques.playspark.akkaguice.NamedActor
 import com.google.inject.{BindingAnnotation, Inject}
 import com.google.inject.name.Named
-import play.module.io.joaovasques.playspark.persistence.PersistenceActor
-import play.module.io.joaovasques.playspark.spark.SparkMessages._
-import play.module.io.joaovasques.playspark.spark.SparkImplicits._
-import play.module.io.joaovasques.playspark.persistence.PersistenceMessages._
+import play.modules.io.joaovasques.playspark.persistence.PersistenceActor
+import play.modules.io.joaovasques.playspark.spark.SparkMessages._
+import play.modules.io.joaovasques.playspark.spark.SparkImplicits._
+import play.modules.io.joaovasques.playspark.persistence.PersistenceMessages._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Failure
 import scala.util.Success
 import reflect.ClassTag
 import scala.util.Try
-import play.module.io.joaovasques.playspark.spark.workers.{SparkJobWorker}
+import play.modules.io.joaovasques.playspark.spark.workers.{SparkJobWorker}
 import java.util.concurrent.Executors._
-
 
 object SparkActor extends NamedActor {
   override final val name = "SparkActor"
@@ -80,8 +80,8 @@ class SparkActor @Inject()(
       }
 
       val query = new Insert(sparkConfToJson(currentSparkContext.map(_.getConf).get), "contexts")
-      val successResponse = new Success((): Unit)
-        (persistenceActor ? query).mapTo[Try[Unit]].onComplete(sendTryResponse[Success[Unit]](_, _sender, successResponse))
+      val successResponse = new Success(currentSparkContext.get.applicationId)
+        (persistenceActor ? query).mapTo[Try[String]].onComplete(sendTryResponse[Success[String]](_, _sender, successResponse))
     }
   }
 
@@ -103,10 +103,13 @@ class SparkActor @Inject()(
       val query = new Find("spark_app_id", id, "contexts")
       getSparkContext[Option[JsValue]](query) {
         case Some(result) => {
+          currentSparkContext.map(_.stop())
           currentSparkContext = Some(new SparkContext(result: SparkConf))
           _sender ! new Success((): Unit)
         }
-        case None => {}
+        case None => {
+          //TODO
+        }
       } {failure =>
         _sender ! failure
       }
@@ -144,15 +147,15 @@ class SparkActor @Inject()(
 
   private def handleJobSubmission: Receive = {
     case message : StartSparkJob => {
-      if(this.currentSparkContext == null) {
-
+      val workerId = UUID.randomUUID().toString()
+      if(currentSparkContext.isEmpty) {
+        //TODO send error message: no spark running
+        sender ! new JobFailed(workerId, new Exception("TODO"), new Date().getTime)
       } else {
         if(currentRunningJobs.getAndIncrement() >= maximumRunningJobs) {
           currentRunningJobs.decrementAndGet()
           //TODO: send message to sender, put job in queue
         } else {
-          //TODO: send job information to status actor
-          val workerId = UUID.randomUUID().toString()
           context.actorOf(
             SparkJobWorker.props(sender, executionContext, this.currentSparkContext.get),
             name = s"SparkJobWorker-${workerId}"
