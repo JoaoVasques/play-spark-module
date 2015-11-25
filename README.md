@@ -11,6 +11,11 @@ Some considerations:
 
 For contribution please check [CONTRIBUTING.md](https://github.com/JoaoVasques/play-spark-module/blob/master/CONTRIBUTING.md)
 
+### Requirements
+
++ JRE 1.8
++ Mongo v3.x
+
 ### Usage
 
 **Status**: waiting for OSSRH approval
