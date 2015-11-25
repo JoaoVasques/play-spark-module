@@ -21,7 +21,6 @@ import play.modules.io.joaovasques.playspark.stats.StatsModule
 import scala.collection.JavaConverters._
 import scala.concurrent.Await
 import scala.concurrent.Future
-import scala.concurrent.duration._
 import play.modules.io.joaovasques.playspark.tests.TestTraits._
 import org.apache.spark.{SparkContext, SparkConf}
 import scala.concurrent.ExecutionContext.Implicits.global
