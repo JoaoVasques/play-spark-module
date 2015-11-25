@@ -5,13 +5,29 @@ import play.api.inject.guice.GuiceApplicationBuilder
 
 import play.api.test.FakeApplication
 import play.api.test.Helpers._
-
+import akka.util.Timeout
+import scala.concurrent.Await
+import scala.concurrent.duration._
 import play.modules.io.joaovasques.playspark.{PlaySparkApi, PlaySparkApiImplementation}
+import org.specs2.time.NoTimeConversions
+import org.specs2.matcher._
+import org.specs2.execute._
+import scala.util.{Failure, Success}
 
-object PlaySpec extends org.specs2.mutable.Specification {
+object PlaySpec extends org.specs2.mutable.Specification with NoTimeConversions{
   "Play integration" title
 
   "PlaySpark API" should {
+
+    def createRunnableFakeApplication[T]()(testBlock:(PlaySparkApiImplementation) => T) = {
+      running(FakeApplication()) {
+        configuredAppBuilder.injector.instanceOf[PlaySparkApi] match {
+          case api: PlaySparkApiImplementation => testBlock(api)
+          case _ => failure("module not loaded correctly")
+        }
+      }
+    }
+
     "not be resolved if the module is not enabled" in running(
       FakeApplication()) {
         val appBuilder = new GuiceApplicationBuilder().build
@@ -21,16 +37,24 @@ object PlaySpec extends org.specs2.mutable.Specification {
       }
 
     "be resolved if the module is enabled" in {
-      //System.setProperty("config.resource", "test.conf")
-
       running(FakeApplication()) {
-        configuredAppBuilder.injector.instanceOf[PlaySparkApi].
-          aka("PlaySpark API") must beLike {
-            case api: PlaySparkApiImplementation =>
-              
-              /* should compile: */ //GridFS(api.db)
-              ok
+        configuredAppBuilder.injector.instanceOf[PlaySparkApi] match {
+          case api: PlaySparkApiImplementation => ok
+        }
+      }
+    }
+
+    "should not be able to stop a non running spark context" >> {
+      //System.setProperty("config.resource", "test.conf")
+      running(FakeApplication()) {
+        configuredAppBuilder.injector.instanceOf[PlaySparkApi] match {
+          case api: PlaySparkApiImplementation => {
+            val timeout = Timeout(5 seconds)
+            val futureResult = api.stopContext()(timeout)
+            Await.result(futureResult, timeout.duration) must beFailedTry
           }
+          case _ => ko("module not loaded correctly")
+        }
       }
     }
   }
