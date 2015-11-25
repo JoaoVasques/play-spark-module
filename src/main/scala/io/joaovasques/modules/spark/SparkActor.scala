@@ -4,6 +4,7 @@ import akka.actor.{Actor, ActorRef, Props}
 import akka.pattern.ask
 import akka.routing.ActorRefRoutee
 import akka.routing.Router
+import java.util.Date
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 import org.apache.spark.SparkConf
@@ -146,14 +147,15 @@ class SparkActor @Inject()(
 
   private def handleJobSubmission: Receive = {
     case message : StartSparkJob => {
+      val workerId = UUID.randomUUID().toString()
       if(currentSparkContext.isEmpty) {
         //TODO send error message: no spark running
+        sender ! new JobFailed(workerId, new Exception("TODO"), new Date().getTime)
       } else {
         if(currentRunningJobs.getAndIncrement() >= maximumRunningJobs) {
           currentRunningJobs.decrementAndGet()
           //TODO: send message to sender, put job in queue
         } else {
-          val workerId = UUID.randomUUID().toString()
           context.actorOf(
             SparkJobWorker.props(sender, executionContext, this.currentSparkContext.get),
             name = s"SparkJobWorker-${workerId}"
