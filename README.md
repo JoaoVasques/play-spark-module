@@ -1,7 +1,7 @@
 Play Spark Module [![Build Status](https://magnum.travis-ci.com/JoaoVasques/play-spark-module.svg?token=YCMWz8VgpQajMEn21TQ2)](https://magnum.travis-ci.com/JoaoVasques/play-spark-module)  [![Codacy Badge](https://api.codacy.com/project/badge/grade/d12a9692b867443cbdd3a69964b0034d)](https://www.codacy.com)
 ----------------------------
 
-This is a plugin for Play 2.4, enabling support for [Apache Spark](http://spark.apache.org/). The goal is to simply Spark Cluster management and job submission.
+This is a plugin for Play 2.4, enabling support for [Apache Spark](http://spark.apache.org/). The goal is to simply Spark Context management and job submission.
 
 Some considerations:
 
