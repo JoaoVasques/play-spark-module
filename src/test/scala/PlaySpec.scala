@@ -13,6 +13,8 @@ import org.specs2.time.NoTimeConversions
 import org.specs2.matcher._
 import org.specs2.execute._
 import scala.util.{Failure, Success}
+import org.apache.spark.{SparkContext, SparkConf}
+import play.modules.io.joaovasques.playspark.spark.SparkMessages._
 
 object PlaySpec extends org.specs2.mutable.Specification with NoTimeConversions{
   "Play integration" title
@@ -44,7 +46,38 @@ object PlaySpec extends org.specs2.mutable.Specification with NoTimeConversions{
       }
     }
 
-    "should not be able to stop a non running spark context" >> {
+    "save a spark context and stop it" >> {
+      running(FakeApplication()) {
+        configuredAppBuilder.injector.instanceOf[PlaySparkApi] match {
+          case api: PlaySparkApiImplementation => {
+            val timeout = Timeout(5 seconds)
+            val conf = new SparkConf()
+              .setMaster("local[2]")
+              .setAppName("PlaySpec")
+
+            val result = Await.result(api.saveSparkContext(conf)(timeout), timeout.duration)
+            result must beSuccessfulTry
+            Await.result(api.deleteContext(result.get)(timeout), timeout.duration) must beSuccessfulTry
+          }
+          case _ => ko("module not loaded correctly")
+        }
+      }
+    }
+
+    "get an empty list when no spark contexts are saved" >> {
+      running(FakeApplication()) {
+        configuredAppBuilder.injector.instanceOf[PlaySparkApi] match {
+          case api: PlaySparkApiImplementation => {
+            val timeout = Timeout(5 seconds)
+            val result = Await.result(api.getContextsConfig()(timeout), timeout.duration)
+            result must be empty
+          }
+          case _ => ko("module not loaded correctly")
+        }
+      }
+    }
+
+    "not be able to stop a non running spark context" >> {
       //System.setProperty("config.resource", "test.conf")
       running(FakeApplication()) {
         configuredAppBuilder.injector.instanceOf[PlaySparkApi] match {
@@ -52,6 +85,21 @@ object PlaySpec extends org.specs2.mutable.Specification with NoTimeConversions{
             val timeout = Timeout(5 seconds)
             val futureResult = api.stopContext()(timeout)
             Await.result(futureResult, timeout.duration) must beFailedTry
+          }
+          case _ => ko("module not loaded correctly")
+        }
+      }
+    }
+
+    "not be able to start a job if no spark context is running" >> {
+      //System.setProperty("config.resource", "test.conf")
+      running(FakeApplication()) {
+        configuredAppBuilder.injector.instanceOf[PlaySparkApi] match {
+          case api: PlaySparkApiImplementation => {
+            val timeout = Timeout(5 seconds)
+            val job = new LongPiJob()
+            val futureResult = api.startJob(job, "")(timeout)
+            Await.result(futureResult, timeout.duration) must beAnInstanceOf[JobFailed]
           }
           case _ => ko("module not loaded correctly")
         }
