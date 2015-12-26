@@ -17,12 +17,12 @@ import net.codingwell.scalaguice.ScalaModule
 class PersistenceModule extends AbstractModule with ScalaModule with GuiceAkkaActorRefProvider {
 
   override def configure() {
-    bind[Actor].annotatedWith(Names.named(PersistenceActor.name)).to[PersistenceActor]
+    bind[Actor].annotatedWith(Names.named(MyPersistenceActor.name)).to[MyPersistenceActor]
   }
 
   @Provides
   @Singleton
-  @Named(PersistenceActor.name)
-  def provideJobExecutionActorRef(@Inject() system: ActorSystem): ActorRef = provideActorRef(system, PersistenceActor.name)
+  @Named(MyPersistenceActor.name)
+  def provideJobExecutionActorRef(@Inject() system: ActorSystem): ActorRef = provideActorRef(system, MyPersistenceActor.name)
 
 }

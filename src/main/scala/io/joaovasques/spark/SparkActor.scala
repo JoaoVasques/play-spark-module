@@ -18,7 +18,7 @@ import play.api.libs.json.JsValue
 import play.modules.io.joaovasques.playspark.akkaguice.NamedActor
 import com.google.inject.{BindingAnnotation, Inject}
 import com.google.inject.name.Named
-import play.modules.io.joaovasques.playspark.persistence.PersistenceActor
+import play.modules.io.joaovasques.playspark.persistence.MyPersistenceActor
 import play.modules.io.joaovasques.playspark.spark.SparkMessages._
 import play.modules.io.joaovasques.playspark.spark.SparkImplicits._
 import play.modules.io.joaovasques.playspark.persistence.PersistenceMessages._
@@ -35,7 +35,7 @@ object SparkActor extends NamedActor {
 }
 
 class SparkActor @Inject()(
-  @Named(PersistenceActor.name) persistenceActor: ActorRef
+  @Named(MyPersistenceActor.name) persistenceActor: ActorRef
 ) extends Actor {
 
   private var currentSparkContext: Option[SparkContext] = None
