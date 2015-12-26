@@ -6,7 +6,7 @@ import com.google.inject.{BindingAnnotation, Inject}
 import com.google.inject.name.Named
 import play.modules.io.joaovasques.playspark.persistence.PersistenceMessages._
 import play.modules.io.joaovasques.playspark.stats.StatsMessages._
-import play.modules.io.joaovasques.playspark.persistence.{PersistenceActor}
+import play.modules.io.joaovasques.playspark.persistence.{MyPersistenceActor}
 import play.modules.io.joaovasques.playspark.stats.StatsActor
 import play.modules.io.joaovasques.playspark.spark.SparkActor
 import play.modules.io.joaovasques.playspark.spark.SparkMessages._
@@ -16,7 +16,7 @@ object CoreActor extends NamedActor {
 }
 
 class CoreActor @Inject()(
-  @Named(PersistenceActor.name) persistenceActor: ActorRef,
+  @Named(MyPersistenceActor.name) persistenceActor: ActorRef,
   @Named(StatsActor.name) statsActor: ActorRef,
   @Named(SparkActor.name) sparkActor: ActorRef
 ) extends Actor {

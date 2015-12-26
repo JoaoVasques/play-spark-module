@@ -20,8 +20,6 @@ object Dependencies {
 
   lazy val spark =  "org.apache.spark" %% "spark-core" % sparkVersion
 
-  lazy val mongo = "org.mongodb" %% "casbah" % "3.0.0"
-
   lazy val play = "com.typesafe.play" %% "play" % playVersion % "provided" cross CrossVersion.binary
 
   lazy val playTest = "com.typesafe.play" %% "play-test" % playVersion % "test" cross CrossVersion.binary
@@ -29,7 +27,7 @@ object Dependencies {
   lazy val specs = "org.specs2" % "specs2" % "2.3.12" % "test" cross CrossVersion.binary
 
   def get() = {
-    Seq(akka, akkaLog, akkaTestKit, guice, scalaGuice, scalaTest, spark, mongo, play, playTest, specs)
+    Seq(akka, akkaLog, akkaTestKit, guice, scalaGuice, scalaTest, spark, play, playTest, specs)
   }
 }
 

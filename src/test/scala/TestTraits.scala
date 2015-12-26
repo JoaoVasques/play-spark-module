@@ -16,7 +16,6 @@ import play.modules.io.joaovasques.playspark.spark.SparkModule
 import play.modules.io.joaovasques.playspark.stats.StatsModule
 import scala.collection.JavaConverters._
 
-
 private[tests] object TestTraits {
 
   trait AkkaGuiceInjector {
@@ -49,5 +48,5 @@ private[tests] object TestTraits {
     )
     val core = _sys.actorOf(GuiceAkkaExtension(_sys).props(CoreActor.name))
   }
-
 }
+
