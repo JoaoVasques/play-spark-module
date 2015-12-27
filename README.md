@@ -23,7 +23,7 @@ To build from source run
 
     sbt publish-local
 
-To run all tests, first start mongodb locally (an actor persistence storage is being developed) and then run:
+To run all tests run:
 
     sbt test
 
