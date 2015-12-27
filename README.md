@@ -16,11 +16,6 @@ For contribution please check [CONTRIBUTING.md](https://github.com/JoaoVasques/p
 ### Requirements
 
 + JRE 1.8
-+ Mongo v3.x
-
-### Usage
-
-**Status**: waiting for OSSRH approval
 
 ### Build manually
 
