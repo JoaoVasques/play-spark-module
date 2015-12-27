@@ -5,13 +5,12 @@ branches:
   only:
     - master
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION compile test:compile
+  - sbt ++$TRAVIS_SCALA_VERSION compile
+  - sbt ++$TRAVIS_SCALA_VERSION test
 notifications:
   email:
     recipients:
       - joao.l.v.vasques@gmail.com
 jdk:
   - oraclejdk8
-services:
-  - mongodb
   
