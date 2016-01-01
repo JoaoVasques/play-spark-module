@@ -1,7 +1,8 @@
 Play Spark Module [![Build Status](https://travis-ci.org/JoaoVasques/play-spark-module.svg?branch=master)](https://travis-ci.org/JoaoVasques/play-spark-module) [![Codacy Badge](https://api.codacy.com/project/badge/grade/d12a9692b867443cbdd3a69964b0034d)](https://www.codacy.com)
 ----------------------------
 
-[![Join the chat at https://gitter.im/JoaoVasques/play-spark-module](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/JoaoVasques/play-spark-module?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/JoaoVasques/play-spark-module](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/JoaoVasques/play-spark-module?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) 
+[ ![Download](https://api.bintray.com/packages/joaovasques/maven/play-spark-module/images/download.svg) ](https://bintray.com/joaovasques/maven/play-spark-module/_latestVersion)
 
 This is a plugin for Play 2.4, enabling support for [Apache Spark](http://spark.apache.org/). The goal is to simply Spark Context management and job submission.
 
