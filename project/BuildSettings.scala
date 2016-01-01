@@ -5,7 +5,7 @@ object BuildSettings {
 
   val projectName = "play-spark-module"
 
-  val buildVersion = "0.1-SNAPSHOT"
+  val buildVersion = "0.1"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     name := projectName,
@@ -61,34 +61,10 @@ object Publish {
   private val repoUrl = env("PUBLISH_REPO_URL")
 
   lazy val settings = Seq(
-    publishMavenStyle := true,
-    publishArtifact in Test := false,
-    publishTo := Some(repoUrl).map(repoName at _),
-    credentials += Credentials(repoName, env("PUBLISH_REPO_ID"),
-      env("PUBLISH_USER"), env("PUBLISH_PASS")),
-    pomIncludeRepository := { _ => false },
+    publishMavenStyle := false,
     licenses := Seq("Apache 2.0" ->
-      url("http://www.apache.org/licenses/LICENSE-2.0")),
-    homepage := Some(url("https://github.com/JoaoVasques/play-spark-module")),
-    pomExtra := (
-      <licenses>
-        <license>
-        <name>Apache 2</name>
-        <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-          <distribution>repo</distribution>
-        </license>
-        </licenses>
-      <scm>
-        <url>git://github.com/JoaoVasques/play-spark-module.git</url>
-        <connection>scm:git://github.com/github.com/JoaoVasques/play-spark-module.git</connection>
-      </scm>
-      <developers>
-        <developer>
-          <id>joaovasques</id>
-          <name>Joao Vazao Vasques</name>
-          <url>https://about.me/joao_vasques</url>
-        </developer>
-      </developers>))
+      url("http://www.apache.org/licenses/LICENSE-2.0"))
+  )
 }
 
 object Travis {
