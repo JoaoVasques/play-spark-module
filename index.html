@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Play-spark-module by JoaoVasques</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Play-spark-module</h1>
+      <h2 class="project-tagline">Apache Spark plugin for Play! Framework</h2>
+      <a href="https://github.com/JoaoVasques/play-spark-module" class="btn">View on GitHub</a>
+      <a href="https://github.com/JoaoVasques/play-spark-module/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/JoaoVasques/play-spark-module/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h2>
+<a id="play-spark-module-" class="anchor" href="#play-spark-module-" aria-hidden="true"><span class="octicon octicon-link"></span></a>Play Spark Module </h2>
+
+<p>This is a plugin for Play 2.4, enabling support for <a href="http://spark.apache.org/">Apache Spark</a>. The goal is to simply Spark Context management and job submission.</p>
+
+<p>Some considerations:</p>
+
+<ul>
+<li>This project is under active development and the APIs might change in the future.</li>
+<li>It wasn't tested on a production environment (yet!)</li>
+<li>No remote spark job submissions tested (yet)</li>
+<li>Support for Spark Streaming in progress</li>
+</ul>
+
+<p>For contribution please check <a href="https://github.com/JoaoVasques/play-spark-module/blob/master/CONTRIBUTING.md">CONTRIBUTING.md</a></p>
+
+<h3>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements</h3>
+
+<ul>
+<li>JRE 1.8</li>
+</ul>
+
+<h3>
+<a id="build-manually" class="anchor" href="#build-manually" aria-hidden="true"><span class="octicon octicon-link"></span></a>Build manually</h3>
+
+<p>To build from source run</p>
+
+<pre><code>sbt publish-local
+</code></pre>
+
+<p>To run all tests run:</p>
+
+<pre><code>sbt test
+</code></pre>
+
+<h3>
+<a id="api" class="anchor" href="#api" aria-hidden="true"><span class="octicon octicon-link"></span></a>API</h3>
+
+<p>The API is divided into two categories/groups:</p>
+
+<ul>
+<li>Context API: for managing spark contexts and configuration</li>
+<li>Job API: for job submission</li>
+</ul>
+
+<div class="highlight highlight-source-scala"><pre><span class="pl-k">trait</span> <span class="pl-en">PlaySparkApi</span> {
+
+  <span class="pl-c">// Context API</span>
+  <span class="pl-k">def</span> <span class="pl-en">saveSparkContext</span>(<span class="pl-v">conf</span>: <span class="pl-en">SparkConf</span>)(<span class="pl-k">implicit</span> <span class="pl-v">timeout</span>: <span class="pl-en">Timeout</span>)<span class="pl-k">:</span> <span class="pl-en">Future</span>[<span class="pl-en">Try</span>[<span class="pl-k">String</span>]]
+  <span class="pl-k">def</span> <span class="pl-en">startContext</span>(<span class="pl-v">contextId</span>: <span class="pl-k">String</span>)(<span class="pl-k">implicit</span> <span class="pl-v">timeout</span>: <span class="pl-en">Timeout</span>)<span class="pl-k">:</span> <span class="pl-en">Future</span>[<span class="pl-en">Try</span>[<span class="pl-k">Unit</span>]]
+  <span class="pl-k">def</span> <span class="pl-en">getContextsConfig</span>()(<span class="pl-k">implicit</span> <span class="pl-v">timeout</span>: <span class="pl-en">Timeout</span>)<span class="pl-k">:</span> <span class="pl-en">Future</span>[<span class="pl-en">List</span>[<span class="pl-en">SparkConf</span>]]
+  <span class="pl-k">def</span> <span class="pl-en">deleteContext</span>(<span class="pl-v">contextId</span>: <span class="pl-k">String</span>)(<span class="pl-k">implicit</span> <span class="pl-v">timeout</span>: <span class="pl-en">Timeout</span>)<span class="pl-k">:</span> <span class="pl-en">Future</span>[<span class="pl-en">Try</span>[<span class="pl-k">Unit</span>]]
+  <span class="pl-k">def</span> <span class="pl-en">stopContext</span>()(<span class="pl-k">implicit</span> <span class="pl-v">timeout</span>: <span class="pl-en">Timeout</span>)<span class="pl-k">:</span> <span class="pl-en">Future</span>[<span class="pl-en">Try</span>[<span class="pl-k">Unit</span>]]
+
+  <span class="pl-c">// Job API</span>
+  <span class="pl-k">def</span> <span class="pl-en">startJob</span>(<span class="pl-v">job</span>: <span class="pl-en">SparkJob</span>, <span class="pl-v">contextId</span>: <span class="pl-k">String</span>)(<span class="pl-k">implicit</span> <span class="pl-v">timeout</span>: <span class="pl-en">Timeout</span>)<span class="pl-k">:</span> <span class="pl-en">Future</span>[<span class="pl-en">SparkJobResult</span>]
+  <span class="pl-k">def</span> <span class="pl-en">startSyncJob</span>(<span class="pl-v">job</span>: <span class="pl-en">SparkJob</span>, <span class="pl-v">contextId</span>: <span class="pl-k">String</span>)(<span class="pl-k">implicit</span> <span class="pl-v">timeout</span>: <span class="pl-en">Timeout</span>)<span class="pl-k">:</span> <span class="pl-en">SparkJobResult</span>
+}
+</pre></div>
+
+<p>Before calling any method from the Job API, you must create a spark context. This methods creates a spark context using a configuration you chose. Remember that you only can have one Spark Context running per JVM. You can do so by calling:</p>
+
+<div class="highlight highlight-source-scala"><pre><span class="pl-k">def</span> <span class="pl-en">saveSparkContext</span>(<span class="pl-v">conf</span>: <span class="pl-en">SparkConf</span>)(<span class="pl-k">implicit</span> <span class="pl-v">timeout</span>: <span class="pl-en">Timeout</span>)<span class="pl-k">:</span> <span class="pl-en">Future</span>[<span class="pl-en">Try</span>[<span class="pl-k">String</span>]]</pre></div>
+
+<p>For more detailed API information please check the <a href="https://github.com/JoaoVasques/play-spark-module/wiki">Wiki</a>.</p>
+
+<h3>
+<a id="additional-documentation" class="anchor" href="#additional-documentation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Additional Documentation</h3>
+
+<p>To generate Scaladoc documentation (on folder doc/) just run:</p>
+
+<pre><code>  sbt doc
+</code></pre>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/JoaoVasques/play-spark-module">Play-spark-module</a> is maintained by <a href="https://github.com/JoaoVasques">JoaoVasques</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
