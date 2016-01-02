@@ -29,6 +29,8 @@ import reflect.ClassTag
 import scala.util.Try
 import play.modules.io.joaovasques.playspark.spark.workers.{SparkJobWorker}
 import java.util.concurrent.Executors._
+import play.api.Logger
+import play.modules.io.joaovasques.playspark.spark.SparkExceptions._
 
 object SparkActor extends NamedActor {
   override final val name = "SparkActor"
@@ -44,7 +46,6 @@ class SparkActor @Inject()(
   private final implicit val timeout = Timeout(5 seconds)
 
   private val currentRunningJobs = new AtomicInteger(0)
-
 
   private def getSparkContext[T](query: Find)(onSuccess : T => Unit )(onFailure: Throwable => Unit)(implicit tag: ClassTag[T] ): Unit = {
     (persistenceActor ? query).mapTo[T].onComplete{
@@ -67,6 +68,7 @@ class SparkActor @Inject()(
       getSparkContext[List[JsValue]](query) {result =>
         _sender ! result.map(c => c: SparkConf)
       } {failure =>
+        Logger.error("Couldn't get Spark Contexts: " + failure.getMessage)
         _sender ! failure
       }
     }
@@ -92,7 +94,9 @@ class SparkActor @Inject()(
         currentSparkContext = None
         sender ! new Success((): Unit)
       } else {
-        sender ! new Failure(new Exception("No running context"))
+        val exception = new SparkContextNotRunningException
+        Logger.error("Couldn't stop Spark Context: " + exception.getMessage)
+        sender ! new Failure(exception)
       }
     }
   }
@@ -111,6 +115,7 @@ class SparkActor @Inject()(
           //TODO
         }
       } {failure =>
+        Logger.error("Couldn't start Spark Context: " + failure.getMessage)
         _sender ! failure
       }
     }
@@ -136,8 +141,9 @@ class SparkActor @Inject()(
             )
         }
         case None => {
-          _sender ! new Failure(new Exception("TODO"))
-          // TODO send exception
+          val exception = new SparkContextNotFoundException
+          Logger.error("Coulnd't delete context. Context not found")
+          _sender ! new Failure(exception)
         }
       } {failure =>
         _sender ! failure
@@ -149,8 +155,9 @@ class SparkActor @Inject()(
     case message : StartSparkJob => {
       val workerId = UUID.randomUUID().toString()
       if(currentSparkContext.isEmpty) {
-        //TODO send error message: no spark running
-        sender ! new JobFailed(workerId, new Exception("TODO"), new Date().getTime)
+        val exception = new SparkContextNotRunningException
+        Logger.error(exception.getMessage)
+        sender ! new JobFailed(workerId, exception, new Date().getTime)
       } else {
         if(currentRunningJobs.getAndIncrement() >= maximumRunningJobs) {
           currentRunningJobs.decrementAndGet()
