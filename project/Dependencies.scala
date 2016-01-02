@@ -18,7 +18,7 @@ object Dependencies {
 
   lazy val scalaTest = "org.scalatest" %% "scalatest" % "2.2.1" % "test"
 
-  lazy val spark =  "org.apache.spark" %% "spark-core" % sparkVersion
+  lazy val spark =  "org.apache.spark" %% "spark-core" % sparkVersion % "provided"
 
   lazy val play = "com.typesafe.play" %% "play" % playVersion % "provided" cross CrossVersion.binary
 
