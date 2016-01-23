@@ -1,5 +1,6 @@
 import sbt._
 import sbt.Keys._
+import xerial.sbt.Sonatype
 
 object BuildSettings {
 
@@ -9,7 +10,7 @@ object BuildSettings {
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     name := projectName,
-    organization := "play.module.io.joaovasques",
+    organization := "com.github.joaovasques",
     version := buildVersion,
     scalaVersion := "2.10.4",
     scalacOptions ++= Seq("-unchecked", "-deprecation",
@@ -57,13 +58,43 @@ object ShellPrompt {
 object Publish {
   @inline def env(n: String): String = sys.env.get(n).getOrElse(n)
 
-  private val repoName = env("PUBLISH_REPO_NAME")
-  private val repoUrl = env("PUBLISH_REPO_URL")
+  private val sonatypeUser = env("SONATYPE_USER")
+  private val sonatypePassword = env("SONATYPE_PASSWORD")
 
   lazy val settings = Seq(
-    publishMavenStyle := false,
-    licenses := Seq("Apache 2.0" ->
-      url("http://www.apache.org/licenses/LICENSE-2.0"))
+    homepage := Some(url("https://about.me/joao_vasques")),
+    publishMavenStyle := true,
+    licenses := Seq("Apache 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
+    publishArtifact in Test := false,
+    publishTo := {
+      val nexus = "https://oss.sonatype.org/"
+      if (isSnapshot.value)
+        Some("snapshots" at nexus + "content/repositories/snapshots")
+      else
+        Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+    },
+    pomIncludeRepository := { _ => false },
+    pomExtra in Global:= (
+      <url>http://joaovasques.github.io/play-spark-module/</url>
+          <licenses>
+        <license>
+        <name>Apache 2</name>
+        <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+          <distribution>repo</distribution>
+        </license>
+        </licenses>
+        <scm>
+        <url>git://github.com/JoaoVasques/play-spark-module.git</url>
+        <connection>scm:scm:git://github.com/github.com/JoaoVasques/play-spark-module.git</connection>
+        </scm>
+        <developers>
+        <developer>
+        <id>com.github.joaovasques</id>
+        <name>Joao Vazao Vasques</name>
+        <url>https://about.me/joao_vasques</url>
+          </developer>
+        </developers>
+    )
   )
 }
 

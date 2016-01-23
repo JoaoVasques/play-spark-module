@@ -14,6 +14,7 @@ lazy val playsparkmodule = Project(
     parallelExecution in Test := false,
     resolvers := Seq(
       "Sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
+      "Sonatype releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2",
       "Sonatype" at "http://oss.sonatype.org/content/groups/public/",
       "Typesafe repository releases" at "http://repo.typesafe.com/typesafe/releases/",
       "Typesafe repository snapshots" at "http://repo.typesafe.com/typesafe/snapshots/"

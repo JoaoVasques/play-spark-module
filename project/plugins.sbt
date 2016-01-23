@@ -10,3 +10,6 @@ resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/release
 
 addSbtPlugin("me.lessis" % "bintray-sbt" % "0.3.0")
 
+// Sonatype
+addSbtPlugin("org.xerial.sbt" % "sbt-sonatype" % "1.0")
+
